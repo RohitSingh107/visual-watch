@@ -40,12 +40,11 @@ selected_list = st.sidebar.selectbox("Select List Type", list_type)
 st.subheader(f"Showing data for {selected_list}")
 
 
+year_counts = get_time_series(selected_list)
 if 'Time Line Chart' in selected_metrics:
-    year_counts = get_time_series(selected_list)
     st.line_chart(year_counts)
 
 if 'Time Bar Chart' in selected_metrics:
-    year_counts = get_time_series(selected_list)
     st.bar_chart(year_counts)
 
 if 'Countries Pie Chart' in selected_metrics:
@@ -75,4 +74,5 @@ if 'Genre Pie Chart' in selected_metrics:
 
     fig = px.pie(values= values, names= names, title='Genre Pie Chart')
     st.plotly_chart(fig)
+
 
