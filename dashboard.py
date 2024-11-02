@@ -6,6 +6,7 @@ import streamlit as st
 import pandas as pd
 from utils.computes import compute
 import plotly.express as px
+import plotly.graph_objects as go
 from icecream import ic
 
 from utils.data import get_lists, get_time_series, get_countries_count, get_genres_count
@@ -14,6 +15,31 @@ def display_table(title, data, columns):
     st.title(title)
     df = pd.DataFrame(data)
     st.dataframe(df[columns])
+
+
+def plot_line_chart(data_series, chart_type):
+    data = data_series.to_dict()
+
+    # Convert keys to integers, find min and max years, and fill missing years with 0
+    min_year, max_year = min(map(int, data)), max(map(int, data))
+    full_data = {year: data.get(str(year), 0) for year in range(min_year, max_year + 1)}
+
+    # Extract years and values for plotting
+    years, values = zip(*sorted(full_data.items()))
+
+    if chart_type == 'line':
+        fig = go.Figure(go.Scatter(x=years, y=values, mode='lines+markers', name='Count'))
+    else:
+        fig = go.Figure(go.Bar(x=years, y=values, name='Count'))
+
+    fig.update_layout(
+        title="Data Over Years",
+        xaxis_title="Year",
+        yaxis_title="Count",
+    )
+    # Display the chart in Streamlit
+    st.plotly_chart(fig)
+
 
 # Title of the dashboard
 st.title("Watch Dashboard")
@@ -29,6 +55,7 @@ metrics = ["Rank Table", "Time Bar Chart", "Time Line Chart", "Countries Pie Cha
 selected_metrics = st.sidebar.multiselect("Select metrics to display", metrics, default=metrics)
 
 
+
 if 'Rank Table' in selected_metrics:
     popular, imdb, tmdb, movies_data = get_lists()
     data = compute(popular, imdb, tmdb, movies_data)
@@ -42,10 +69,11 @@ st.subheader(f"Showing data for {selected_list}")
 
 year_counts = get_time_series(selected_list)
 if 'Time Line Chart' in selected_metrics:
-    st.line_chart(year_counts)
+    # st.line_chart(year_counts)
+    plot_line_chart(year_counts, chart_type = 'line')
 
 if 'Time Bar Chart' in selected_metrics:
-    st.bar_chart(year_counts)
+    plot_line_chart(year_counts, chart_type = 'bar')
 
 if 'Countries Pie Chart' in selected_metrics:
     cpcn = st.sidebar.slider("Number of slices in Countries Pie Chart", value = 10, max_value=20, min_value=2) - 1
