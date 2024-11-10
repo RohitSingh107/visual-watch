@@ -9,7 +9,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from icecream import ic
 
-from utils.data import get_lists, get_time_series, get_countries_count, get_genres_count
+from utils.data import data_store
 
 def display_table(title, data, columns):
     st.title(title)
@@ -57,7 +57,7 @@ selected_metrics = st.sidebar.multiselect("Select metrics to display", metrics, 
 
 
 if 'Rank Table' in selected_metrics:
-    popular, imdb, tmdb, movies_data = get_lists()
+    popular, imdb, tmdb, movies_data = data_store.get_lists()
     data = compute(popular, imdb, tmdb, movies_data)
     selected_columns = st.sidebar.multiselect("Select coumns to display", data[0].keys(), default=data[0].keys())
     display_table('Rank Table', data, selected_columns)
@@ -67,7 +67,7 @@ selected_list = st.sidebar.selectbox("Select List Type", list_type)
 st.subheader(f"Showing data for {selected_list}")
 
 
-year_counts = get_time_series(selected_list)
+year_counts = data_store.get_time_series(selected_list)
 if 'Time Line Chart' in selected_metrics:
     # st.line_chart(year_counts)
     plot_line_chart(year_counts, chart_type = 'line')
@@ -78,7 +78,7 @@ if 'Time Bar Chart' in selected_metrics:
 if 'Countries Pie Chart' in selected_metrics:
     cpcn = st.sidebar.slider("Number of slices in Countries Pie Chart", value = 10, max_value=20, min_value=2) - 1
 
-    country_count = get_countries_count(selected_list)
+    country_count = data_store.get_countries_count(selected_list)
 
     country_count = {k: v for k, v in sorted(country_count.items(), key = lambda x: x[1], reverse=True)}
 
@@ -93,7 +93,7 @@ if 'Countries Pie Chart' in selected_metrics:
 
 if 'Genre Pie Chart' in selected_metrics:
 
-    genre_count = get_genres_count(selected_list)
+    genre_count = data_store.get_genres_count(selected_list)
 
     genre_count = {k: v for k, v in sorted(genre_count.items(), key = lambda x: x[1], reverse=True)}
 
