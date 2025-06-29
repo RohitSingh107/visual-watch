@@ -74,7 +74,7 @@ def add_countries(movies, movies_data):
 
         new_movie = movie.copy()
         new_movie['INTERNATIONAL'] = not 'US' in countries and not 'IN' in countries 
-        new_movie['COUNTRIES'] = list(map(lambda x : pycountry.countries.lookup(x).name, countries))
+        new_movie['COUNTRIES'] = list(map(lambda x : pycountry.countries.lookup('ru' if x.lower() == 'su' else x).name, countries))
         new_list.append(new_movie)
 
     return list(new_list)
