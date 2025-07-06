@@ -15,7 +15,8 @@ def compute(popular, imdb, tmdb, movies_data):
 
     r = add_countries(r, movies_data)
 
-    r.sort(key=lambda x: x['AVERAGE_RANK'])
+    # r.sort(key=lambda x: x['AVERAGE_RANK'])
+    r.sort(key=lambda x: x['IMDB_WEIGHTED'], reverse=True)
     return r
 
 

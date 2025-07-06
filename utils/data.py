@@ -16,6 +16,7 @@ class DataStore:
             cls._instance._sorting_df = None 
             cls._instance._scrape_df = None 
             cls._instance._hindi_df = None 
+            cls._instance._hot_df = None 
             cls._instance._time_series = {} 
             cls._instance._genres_count = {} 
             cls._instance._countries_count = {} 
@@ -23,10 +24,17 @@ class DataStore:
 
     def _generate_hindi_df(self):
         return pd.read_csv('./hindi_list.csv')
+    def _generate_hot_df(self):
+        return pd.read_csv('./hot_list.csv')
     def _generate_scrape_df(self):
         return pd.read_csv('./scrape_spider.csv')
     def _generate_sorting_df(self):
         return pd.read_csv('./sorting_spider.csv')
+
+    def _get_hot_df(self):
+        if self._hot_df is None:
+            self._hot_df = self._generate_hot_df()
+        return self._hot_df
 
     def _get_hindi_df(self):
         if self._hindi_df is None:
@@ -46,9 +54,12 @@ class DataStore:
     def _generate_lists(self):
         df = self._get_sorting_df() 
         hdf = self._get_hindi_df() 
+        hldf = self._get_hot_df() 
         scrdf = self._get_scrape_df() 
         hindi_list = map(lambda x: " ".join(x.split(' ')[:-1]), hdf['TITLE'].values)
+        hot_list = map(lambda x: " ".join(x.split(' ')[:-1]), hldf['TITLE'].values)
         df['HINDI'] = df['TITLE'].isin(hindi_list) #type: ignore
+        df['HOT'] = df['TITLE'].isin(hot_list) #type: ignore
         df['YEAR'] = df['YEAR'].apply(lambda x: str(x))
         popular = df[df['SORTED BY'] == 'POPULAR'].drop(columns=['SORTED BY']).to_dict(orient='records') #type: ignore
         imdb = df[df['SORTED BY'] == 'IMDB_SCORE'].drop(columns=['SORTED BY']).to_dict(orient='records') #type: ignore
@@ -114,6 +125,7 @@ class DataStore:
         self._sorting_df = None 
         self._scrape_df = None 
         self._hindi_df = None 
+        self._hot_df = None 
         self._time_series = {} 
         self._genres_count = {} 
         self._countries_count = {} 
