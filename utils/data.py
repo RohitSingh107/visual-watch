@@ -61,6 +61,7 @@ class DataStore:
         df['HINDI'] = df['TITLE'].isin(hindi_list) #type: ignore
         df['HOT'] = df['TITLE'].isin(hot_list) #type: ignore
         df['YEAR'] = df['YEAR'].apply(lambda x: str(x))
+        df['IS MOVIE'] = df['ID'].str.startswith('tm')
         popular = df[df['SORTED BY'] == 'POPULAR'].drop(columns=['SORTED BY']).to_dict(orient='records') #type: ignore
         imdb = df[df['SORTED BY'] == 'IMDB_SCORE'].drop(columns=['SORTED BY']).to_dict(orient='records') #type: ignore
         tmdb = df[df['SORTED BY'] == 'TMDB_POPULARITY'].drop(columns=['SORTED BY']).to_dict(orient='records') #type: ignore
